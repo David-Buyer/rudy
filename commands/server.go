@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/spf13/cobra"
@@ -46,6 +47,7 @@ func (*Server) Info() string {
 // Run executes the script associated to the command.
 func (s *Server) Run() RunCmd {
 	return func(_ *cobra.Command, _ []string) {
+		fmt.Printf("Server is listening on 8081")
 		_ = http.ListenAndServe(":8081", s)
 	}
 }

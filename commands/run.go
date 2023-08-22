@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -62,16 +64,72 @@ func (*Run) Info() string {
 func (*Run) Run() RunCmd {
 	return func(_ *cobra.Command, _ []string) {
 		var waitgroup sync.WaitGroup
-		isize, e := humanize.ParseBytes(size)
+		var data []byte
+		var e error
+		var isize uint64
+		exit := false
+
+		if  filepath != "" {
+			if data, e = os.ReadFile(filepath); e != nil {
+				panic(fmt.Sprintf("Error %s while getting file \"%s\"", e.Error(), filepath))
+			}
+			isize = uint64(len(data))
+		} else { 
+			isize, e = humanize.ParseBytes(size)
+		}
 		if e != nil {
 			panic(e)
+		}
+
+		fields, err := request.GetFormFields(url)
+
+		if err != nil {
+			err = fmt.Errorf("An error occurred during the request: %w", err)
+			logger.Logger.Sugar().Error(err)
+			panic(err)
+		}
+
+		if len(fields) < 1 {
+			err = fmt.Errorf("No input fields found at %s", url)
+			logger.Logger.Sugar().Error(err)
+			return
+		} else {
+			for {
+
+				if exit { break }
+
+				fmt.Printf("Choice one of the following input fields:\n")
+
+				for i, opt := range fields {
+					fmt.Printf("%d. %s\n", i, opt) 
+				}
+
+				fmt.Printf("Number:\n>")
+				var selection int
+				_, err := fmt.Scan(&selection)
+				
+				time.Sleep(2 * time.Second)
+				
+				select  {
+					case <-request.Context.Done():
+						return
+					default:
+						if err != nil || selection < 1 || selection > len(fields) {
+							fmt.Printf("Invalid selection. Try again.\n")
+							continue
+						} else {
+							request.TargetFieldName = fields[selection] + "="
+							exit = true
+						}
+				}
+			}
 		}
 
 		waitgroup.Add(int(concurrents))
 
 		for i := 0; i < int(concurrents); i++ {
 			go func() {
-				req := request.NewRequest(int64(isize), url, interval)
+				req := request.NewRequest(int64(isize), url, interval, data)
 				if tor != "" {
 					req.WithTor(tor)
 				}

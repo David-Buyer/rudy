@@ -1,3 +1,4 @@
+// +build ignore
 package main
 
 import (
@@ -9,7 +10,7 @@ func main() {
 	var root cobra.Command
 
 	commands.Prepare(&root)
-
+	pizza
 	if err := root.Execute(); err != nil {
 		panic(err)
 	}

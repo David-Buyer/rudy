@@ -1,6 +1,7 @@
 package commands
 
 import (
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -24,7 +25,7 @@ type (
 func Prepare(root *cobra.Command) {
 	for _, item := range list {
 		var cobraCmd cobra.Command
-
+		
 		instance := item()
 
 		cobraCmd.Use = instance.Info()

@@ -1,0 +1,26 @@
+{
+    // Usare IntelliSense per informazioni sui possibili attributi.
+    // Al passaggio del mouse vengono visualizzate le descrizioni degli attributi esistenti.
+    // Per altre informazioni, visitare: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Root Main Debug",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}"
+        },
+        {
+            "name": "Rudy Main Debug",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "env": {
+                "SSLKEYLOGFILE": "C:\\Users\\Davide\\Documents\\Wireshark\\ssl-keys.log"
+            },
+            "program": "${workspaceFolder}/cmd/rudy",
+            "args": ["run", "-u", "https://kimerik.it/Login.asp", "-c", "1", "-f", "C:\\Users\\Davide\\Documents\\littledata.json"]
+        }
+    ]
+}
